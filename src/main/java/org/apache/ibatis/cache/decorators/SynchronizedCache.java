@@ -38,6 +38,14 @@ public class SynchronizedCache implements Cache {
     return delegate.getSize();
   }
 
+  /**
+   * 责任链模式 第一个责任链 交给SynchronizedCache 保证线程安全
+   * 下一个责任链是LoggingCache
+   * 多线程环境下 保证线程安全的拿到缓存
+   * @param key
+   *          Can be any object but usually it is a {@link CacheKey}
+   * @param object
+   */
   @Override
   public synchronized void putObject(Object key, Object object) {
     delegate.putObject(key, object);
