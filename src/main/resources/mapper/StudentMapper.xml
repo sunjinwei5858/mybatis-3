@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.apache.ibatis.mapper.UserMapper">
+
+    <update id="updateName">
+        UPDATE user set name = #{bb} where id = #{aa}
+    </update>
+
+    <!-- 开启二级缓存 -->
+    <cache></cache>
+
+    <!--userCashe属性为true 表示开启二级缓存-->
+    <select id="findUserList" resultType="org.apache.ibatis.domain.User" useCache="true">
+        SELECT id, name from user limit 1
+    </select>
+
+    <select id="findUserById" resultType="org.apache.ibatis.domain.User">
+        SELECT id, name from user where id = #{userId}
+    </select>
+
+
+</mapper>
