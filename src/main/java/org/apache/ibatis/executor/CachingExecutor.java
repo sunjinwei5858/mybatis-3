@@ -69,8 +69,17 @@ public class CachingExecutor implements Executor {
         return delegate.isClosed();
     }
 
+    /**
+     * 更新操作 需要清空缓存
+     *
+     * @param ms
+     * @param parameterObject
+     * @return
+     * @throws SQLException
+     */
     @Override
     public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+        // 进入该方法，可知：清空了TransactionalCache中entriesToAddOnCommit和entriesToRemoveOnCommit的数据，同时clearOnCommit设置为true
         flushCacheIfRequired(ms);
         return delegate.update(ms, parameterObject);
     }
@@ -103,8 +112,9 @@ public class CachingExecutor implements Executor {
     }
 
     /**
+     * 进行二级缓存的查询
      * 二级缓存相关逻辑实现 使用装饰者模式嵌入了二级缓存逻辑进去
-     *
+     * <p>
      * 其余的操作 比如 查询数据库 获取数据库连接 全部都交给BaseExecutor执行器做
      *
      * @param ms
@@ -120,20 +130,31 @@ public class CachingExecutor implements Executor {
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
             throws SQLException {
+        // 此处的cache就是当mybatis初始化加载mapper映射文件时，如果配置了<cache/>，就会有该cache对象;下面会对MappedStatement这个类进行分析
         Cache cache = ms.getCache();
         if (cache != null) {
+            /**
+             * 是否需要刷新缓存，默认情况下，select不需要刷新缓存，insert,delete,update要刷新缓存
+             */
             flushCacheIfRequired(ms);
             if (ms.isUseCache() && resultHandler == null) {
                 ensureNoOutParams(ms, boundSql);
+                //查询二级缓存，二级缓存是存放在PerpetualCache类中的HashMap中的，使用到了装饰器模式  分析此方法
                 @SuppressWarnings("unchecked")
                 List<E> list = (List<E>) tcm.getObject(cache, key);
                 if (list == null) {
+                    //如果二级缓存没命中，则调用装饰器模式的这个方法：这方法中是先查询一级缓存，如果还没命中，则会查询数据库
                     list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+                    /**
+                     * 把查询出的数据放到TransactionCache的entriesToAddOnCommit这个HashMap中，
+                     * 要注意：只是暂时存放到这里，只有当事务提交后，这里的数据才会真正的放到二级缓存中，后面会介绍这个 分析此方法
+                     */
                     tcm.putObject(cache, key, list); // issue #578 and #116
                 }
                 return list;
             }
         }
+        //如果不使用缓存，则调用BaseExecutor的方法
         return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
     }
 
@@ -142,6 +163,11 @@ public class CachingExecutor implements Executor {
         return delegate.flushStatements();
     }
 
+    /**
+     * 事务进行提交 会将二级
+     * @param required
+     * @throws SQLException
+     */
     @Override
     public void commit(boolean required) throws SQLException {
         delegate.commit(required);
@@ -189,9 +215,17 @@ public class CachingExecutor implements Executor {
         delegate.clearLocalCache();
     }
 
+    /**
+     * 刷新缓存，默认情况下，select不需要刷新缓存，insert,delete,update要刷新缓存。
+     * 进行清空TransactionCache类中的entriesToAddOnCommit容器map中的数据
+     * 但是二级缓存中的数据对象并未清除【二级缓存中的数据存放在PerpetualCache中】，所以进入第二步事务提交。
+     *
+     * @param ms
+     */
     private void flushCacheIfRequired(MappedStatement ms) {
         Cache cache = ms.getCache();
         if (cache != null && ms.isFlushCacheRequired()) {
+            // 清空事务缓存容器中的数据
             tcm.clear(cache);
         }
     }

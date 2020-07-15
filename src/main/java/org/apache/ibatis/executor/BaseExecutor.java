@@ -157,6 +157,21 @@ public abstract class BaseExecutor implements Executor {
         return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
     }
 
+    /**
+     * query方法：BaseExecutor执行器进行了一级缓存的处理逻辑
+     * 如果一级缓存 存在 那么从缓存中取
+     * 如果一级缓存 不存在 那么查询数据库
+     *
+     * @param ms
+     * @param parameter
+     * @param rowBounds
+     * @param resultHandler
+     * @param key
+     * @param boundSql
+     * @param <E>
+     * @return
+     * @throws SQLException
+     */
     @SuppressWarnings("unchecked")
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
@@ -170,10 +185,12 @@ public abstract class BaseExecutor implements Executor {
         List<E> list;
         try {
             queryStack++;
+            // 从一级缓存中查询
             list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
             if (list != null) {
                 handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
             } else {
+                // 如果不存在 那么查询数据库
                 list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
             }
         } finally {
@@ -352,6 +369,14 @@ public abstract class BaseExecutor implements Executor {
         return list;
     }
 
+    /**
+     * 获取连接
+     * 基于事务获取连接
+     *
+     * @param statementLog
+     * @return
+     * @throws SQLException
+     */
     protected Connection getConnection(Log statementLog) throws SQLException {
         Connection connection = transaction.getConnection();
         if (statementLog.isDebugEnabled()) {

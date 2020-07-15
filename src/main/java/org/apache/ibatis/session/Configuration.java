@@ -101,7 +101,7 @@ public class Configuration {
     // 使用列标签代替列名,一般来说,这是希望的结果
     protected boolean useColumnLabel = true;
 
-    // 是否启用缓存
+    // 是否启用二级缓存 <setting name="cacheEnabled" value="true" /> 此处默认是开启的 真要开启 还有别的需要一起配置
     protected boolean cacheEnabled = true;
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
@@ -735,6 +735,7 @@ public class Configuration {
         } else {
             executor = new SimpleExecutor(this, transaction);
         }
+        // 如果映射文件配置了二级缓存 默认是true，则对SimpleExecutor进行装饰，而装饰类是CacheExecutor，这就是创建DefaultSqlSession时传入的Executor参数
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
