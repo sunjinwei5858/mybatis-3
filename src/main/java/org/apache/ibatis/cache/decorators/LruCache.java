@@ -35,7 +35,7 @@ public class LruCache implements Cache {
 
     public LruCache(Cache delegate) {
         this.delegate = delegate;
-        setSize(1024);
+        setSize(4);
     }
 
     @Override
@@ -51,6 +51,8 @@ public class LruCache implements Cache {
     /**
      * 使用LinkedHashMap ，这里面accessOrder设置为true 表示排序 每次如果取出key 那么将这个key排在最前面
      * 如果排在最后面 那么肯定就是很少使用了
+     *
+     * 实现LRU算法的关键点：打开一个开关（accessorOrder），重写一个方法，让其返回true时，移除头节点。
      *
      * @param size
      */
