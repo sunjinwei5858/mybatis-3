@@ -77,6 +77,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 /**
+ * MyBatis所有的配置信息都维持在Configuration对象之中，基本每个对象都会持有它的引用
+ *
  * @author Clinton Begin
  */
 public class Configuration {

@@ -1,6 +1,8 @@
 package mytest;
 
 import org.apache.ibatis.cache.Cache;
+import org.apache.ibatis.cache.decorators.LruCache;
+import org.apache.ibatis.cache.impl.PerpetualCache;
 import org.apache.ibatis.domain.User;
 import org.apache.ibatis.executor.*;
 import org.apache.ibatis.io.Resources;
@@ -52,7 +54,7 @@ public class MyTest {
 
     /**
      * 测试是否走了一级缓存
-     *
+     * <p>
      * 测试是否走了二级缓存 开启二级缓存的配置 有三点config标签设置为true xml中加入cash标签, session必须手动commit才会提交到二级缓存
      */
     @Test
@@ -74,20 +76,6 @@ public class MyTest {
         User user2 = userMapper.findUserById(1);
 
         System.out.println(user2 == user1);
-
-        User user3 = userMapper.findUserById(1);
-        User user4 = userMapper.findUserById(1);
-        User user5 = userMapper.findUserById(1);
-        User user6 = userMapper.findUserById(1);
-        User user7 = userMapper.findUserById(1);
-        User user8 = userMapper.findUserById(1);
-        User user9 = userMapper.findUserById(1);
-        User user10 = userMapper.findUserById(1);
-        User user11 = userMapper.findUserById(1);
-        User user12 = userMapper.findUserById(1);
-        User user13 = userMapper.findUserById(1);
-
-        System.out.println(user2 == user6);
 
     }
 
@@ -245,6 +233,19 @@ public class MyTest {
         cache.putObject("aaa", user);
         Object aaa = cache.getObject("aaa");
         System.out.println("====:" + aaa);
+
+    }
+
+    @Test
+    public void lruCasheTest() {
+        LruCache lruCache = new LruCache(new PerpetualCache("default"));
+        int size = lruCache.getSize();
+        System.out.println("========="+size);
+        lruCache.putObject("aaaa","aaa");
+        lruCache.putObject("bbb","bbb");
+        lruCache.putObject("ccc","ccc");
+
+
 
     }
 

@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * mybatis使用HashMap进行维护缓存的key-value
+ *
  * @author Clinton Begin
  */
 public class PerpetualCache implements Cache {
@@ -51,6 +53,7 @@ public class PerpetualCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
+        System.out.println("查询二级缓存。。。。。。");
         return cache.get(key);
     }
 

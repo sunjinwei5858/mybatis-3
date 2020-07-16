@@ -75,6 +75,12 @@ public class CacheKey implements Cloneable, Serializable {
         return updateList.size();
     }
 
+    /**
+     * key的生成策略
+     * [hashcode : checksum : mappedStementId : offset : limit : executeSql : queryParams]。
+     *
+     * @param object
+     */
     public void update(Object object) {
         int baseHashCode = object == null ? 1 : ArrayUtil.hashCode(object);
 

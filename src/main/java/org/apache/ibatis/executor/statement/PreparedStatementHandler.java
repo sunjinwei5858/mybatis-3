@@ -54,10 +54,20 @@ public class PreparedStatementHandler extends BaseStatementHandler {
         ps.addBatch();
     }
 
+    /**
+     * StatementHandler 的一个实现类 PreparedStatementHandler（这也是我们最常用的，封装的是PreparedStatement）
+     *
+     * @param statement
+     * @param resultHandler
+     * @param <E>
+     * @return
+     * @throws SQLException
+     */
     @Override
     public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
         PreparedStatement ps = (PreparedStatement) statement;
         ps.execute();
+        //结果交给了ResultSetHandler 去处理
         return resultSetHandler.handleResultSets(ps);
     }
 
