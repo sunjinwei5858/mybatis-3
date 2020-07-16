@@ -66,6 +66,9 @@ public abstract class BaseExecutor implements Executor {
     protected BaseExecutor(Configuration configuration, Transaction transaction) {
         this.transaction = transaction;
         this.deferredLoads = new ConcurrentLinkedQueue<>();
+        /**
+         *
+         */
         this.localCache = new PerpetualCache("LocalCache");
         this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
         this.closed = false;
@@ -229,6 +232,16 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
+    /**
+     * 创建缓存key的方法入口
+     * [hashcode : checksum : mappedStementId : offset : limit : executeSql : queryParams]。
+     *
+     * @param ms
+     * @param parameterObject
+     * @param rowBounds
+     * @param boundSql
+     * @return
+     */
     @Override
     public CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql) {
         if (closed) {
