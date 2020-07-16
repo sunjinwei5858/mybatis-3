@@ -24,6 +24,8 @@ import java.util.Map;
  * 装饰器模式
  * 清除最少使用的
  * Lru (least recently used) cache decorator.
+ * <p>
+ * 这里的 LRU 算法基于 LinkedHashMap 覆盖其 removeEldestEntry 方法实现
  *
  * @author Clinton Begin
  */
@@ -35,7 +37,7 @@ public class LruCache implements Cache {
 
     public LruCache(Cache delegate) {
         this.delegate = delegate;
-        setSize(4);
+        setSize(4); // // 设置 map 默认大小
     }
 
     @Override
@@ -51,7 +53,7 @@ public class LruCache implements Cache {
     /**
      * 使用LinkedHashMap ，这里面accessOrder设置为true 表示排序 每次如果取出key 那么将这个key排在最前面
      * 如果排在最后面 那么肯定就是很少使用了
-     *
+     * <p>
      * 实现LRU算法的关键点：打开一个开关（accessorOrder），重写一个方法，让其返回true时，移除头节点。
      *
      * @param size
@@ -60,10 +62,13 @@ public class LruCache implements Cache {
         keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
             private static final long serialVersionUID = 4267176411845948333L;
 
+            // 覆盖该方法，当每次往该map 中put 时数据时，如该方法返回 True，便移除该map中使用最少的Entry
+            // 其参数  eldest 为当前最老的  Entry
             @Override
             protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
                 boolean tooBig = size() > size;
                 if (tooBig) {
+                    // //记录当前最老的缓存数据的 Key 值，因为要委托给下一个 Cache 实现删除
                     eldestKey = eldest.getKey();
                 }
                 return tooBig;
@@ -85,6 +90,7 @@ public class LruCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
+        // 便于 该 Map 统计 get该key的次数
         keyMap.get(key); // touch
         return delegate.getObject(key);
     }
@@ -100,7 +106,14 @@ public class LruCache implements Cache {
         keyMap.clear();
     }
 
+
+    /**
+     * 看看当前实现是否有 eldestKey, 有的话就调用 removeObject ，将该key从cache中移除
+     *
+     * @param key
+     */
     private void cycleKeyList(Object key) {
+        // // 存储当前 put 到cache中的 key 值
         keyMap.put(key, key);
         if (eldestKey != null) {
             delegate.removeObject(eldestKey);
