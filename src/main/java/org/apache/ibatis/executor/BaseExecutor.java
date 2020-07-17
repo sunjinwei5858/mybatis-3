@@ -188,8 +188,9 @@ public abstract class BaseExecutor implements Executor {
         List<E> list;
         try {
             queryStack++;
-            // 从一级缓存中查询
+            // 从一级缓存中查询 从本地缓存在中获取该 key 所对应 的结果集
             list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
+            //
             if (list != null) {
                 handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
             } else {
@@ -367,12 +368,28 @@ public abstract class BaseExecutor implements Executor {
         }
     }
 
+    /**
+     * 从数据库查询的逻辑分析：
+     * 首先先在map中key 占一个位置，然后从数据库中查询 再将这个key移除
+     * 最后将key和list进行插入
+     * @param ms
+     * @param parameter
+     * @param rowBounds
+     * @param resultHandler
+     * @param key
+     * @param boundSql
+     * @param <E>
+     * @return
+     * @throws SQLException
+     */
     private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         List<E> list;
+        // 为该 key 添加一个占位标记
         localCache.putObject(key, EXECUTION_PLACEHOLDER);
         try {
             list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
         } finally {
+            // 删除该 key 的占位标记
             localCache.removeObject(key);
         }
         localCache.putObject(key, list);
