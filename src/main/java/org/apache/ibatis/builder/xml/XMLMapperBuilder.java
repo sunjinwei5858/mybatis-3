@@ -32,6 +32,8 @@ import java.io.Reader;
 import java.util.*;
 
 /**
+ * 解析mapper映射文件的类，拿到sql语句
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
