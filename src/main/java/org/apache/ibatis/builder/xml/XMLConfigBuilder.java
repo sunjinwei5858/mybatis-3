@@ -129,7 +129,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     private void parseConfiguration(XNode root) {
         try {
             // issue #117 read properties first
-            // 解析properties配置
+            // 解析properties配置 注意顺序 需要先解析properties标签 代码是从上到下执行的
             propertiesElement(root.evalNode("properties"));
 
             // 解析settings配置 并转化为Properties对象
