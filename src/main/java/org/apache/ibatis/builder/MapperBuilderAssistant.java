@@ -237,6 +237,32 @@ public class MapperBuilderAssistant extends BaseBuilder {
         return new Discriminator.Builder(configuration, resultMapping, namespaceDiscriminatorMap).build();
     }
 
+    /**
+     * 将select标签里面所有的属性值 使用这个类
+     * 但是这个方法 需要传递的参数太多 代码需要优化 ，可以参考spring的方式解决 使用上下文context的方式
+     *
+     * @param id
+     * @param sqlSource
+     * @param statementType
+     * @param sqlCommandType
+     * @param fetchSize
+     * @param timeout
+     * @param parameterMap
+     * @param parameterType
+     * @param resultMap
+     * @param resultType
+     * @param resultSetType
+     * @param flushCache
+     * @param useCache
+     * @param resultOrdered
+     * @param keyGenerator
+     * @param keyProperty
+     * @param keyColumn
+     * @param databaseId
+     * @param lang
+     * @param resultSets
+     * @return
+     */
     public MappedStatement addMappedStatement(
             String id,
             SqlSource sqlSource,

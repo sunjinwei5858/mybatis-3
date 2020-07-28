@@ -28,6 +28,9 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
+ * 顾名思义 该类不具备池化特性。每次都会返回一个新的数据库连接，而非复用旧的连接。
+ * 核心的方法有三个，分别如下：
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
@@ -35,6 +38,7 @@ public class UnpooledDataSource implements DataSource {
 
     private ClassLoader driverClassLoader;
     private Properties driverProperties;
+    // 缓存驱动
     private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
     private String driver;
@@ -46,6 +50,10 @@ public class UnpooledDataSource implements DataSource {
     private Integer defaultTransactionIsolationLevel;
     private Integer defaultNetworkTimeout;
 
+    /**
+     * 静态代码块 UnpooledDataSource进行初始化之前就加载
+     * 这里主要进行了 获取驱动的逻辑+将驱动进行缓存
+     */
     static {
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
@@ -85,6 +93,12 @@ public class UnpooledDataSource implements DataSource {
         this.driverProperties = driverProperties;
     }
 
+    /**
+     * 获取连接
+     *
+     * @return
+     * @throws SQLException
+     */
     @Override
     public Connection getConnection() throws SQLException {
         return doGetConnection(username, password);
@@ -199,6 +213,14 @@ public class UnpooledDataSource implements DataSource {
         this.defaultNetworkTimeout = defaultNetworkTimeout;
     }
 
+    /**
+     * 1 获取到用户名和密码 存储到properties
+     *
+     * @param username
+     * @param password
+     * @return
+     * @throws SQLException
+     */
     private Connection doGetConnection(String username, String password) throws SQLException {
         Properties props = new Properties();
         if (driverProperties != null) {
@@ -214,7 +236,7 @@ public class UnpooledDataSource implements DataSource {
     }
 
     /**
-     * 获取connection代码：
+     * 获取connection 数据库连接 这里和jdbc一样 都是通过DriverManager的接口方法获取数据库连接
      * 1。先获取到用户名和密码 存储到properties中
      * 2。初始化驱动
      * 3。最后获取connection连接
@@ -224,12 +246,23 @@ public class UnpooledDataSource implements DataSource {
      * @throws SQLException
      */
     private Connection doGetConnection(Properties properties) throws SQLException {
+        // 1 初始化驱动
         initializeDriver();
+        // 2 通过DriverManager获取连接
         Connection connection = DriverManager.getConnection(url, properties);
+        // 3 配置连接 包括自动提交以及事务等级
         configureConnection(connection);
         return connection;
     }
 
+    /**
+     * 注册驱动逻辑：
+     * 缓存驱动实例，是为了避免重复注册驱动---因为初始化UnpooledDataSource的时候 静态代码块就进行了获取驱动和缓存驱动。
+     * 这个方法 避免每次获取数据库连接时都重新注册驱动
+     * 不是注册驱动，而是将驱动代理类对象注册
+     *
+     * @throws SQLException
+     */
     private synchronized void initializeDriver() throws SQLException {
         if (!registeredDrivers.containsKey(driver)) {
             Class<?> driverType;
@@ -241,6 +274,9 @@ public class UnpooledDataSource implements DataSource {
                 }
                 // DriverManager requires the driver to be loaded via the system ClassLoader.
                 // http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
+                /**
+                 * 注册驱动
+                 */
                 Driver driverInstance = (Driver) driverType.getDeclaredConstructor().newInstance();
                 DriverManager.registerDriver(new DriverProxy(driverInstance));
                 registeredDrivers.put(driver, driverInstance);
@@ -250,6 +286,12 @@ public class UnpooledDataSource implements DataSource {
         }
     }
 
+    /**
+     * 配置连接
+     *
+     * @param conn
+     * @throws SQLException
+     */
     private void configureConnection(Connection conn) throws SQLException {
         if (defaultNetworkTimeout != null) {
             conn.setNetworkTimeout(Executors.newSingleThreadExecutor(), defaultNetworkTimeout);
@@ -262,6 +304,9 @@ public class UnpooledDataSource implements DataSource {
         }
     }
 
+    /**
+     * driver代理类 DriverProxy
+     */
     private static class DriverProxy implements Driver {
         private Driver driver;
 

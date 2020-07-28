@@ -105,6 +105,7 @@ public class Configuration {
 
     // 是否启用二级缓存 <setting name="cacheEnabled" value="true" /> 此处默认是开启的 真要开启 还有别的需要一起配置
     protected boolean cacheEnabled = true;
+
     protected boolean callSettersOnNulls;
     protected boolean useActualParamName = true;
     protected boolean returnInstanceForEmptyRow;
@@ -147,74 +148,23 @@ public class Configuration {
      */
     protected Class<?> configurationFactory;
 
-    @Override
-    public String toString() {
-        return "Configuration{" +
-                "environment=" + environment +
-                ", safeRowBoundsEnabled=" + safeRowBoundsEnabled +
-                ", safeResultHandlerEnabled=" + safeResultHandlerEnabled +
-                ", mapUnderscoreToCamelCase=" + mapUnderscoreToCamelCase +
-                ", aggressiveLazyLoading=" + aggressiveLazyLoading +
-                ", multipleResultSetsEnabled=" + multipleResultSetsEnabled +
-                ", useGeneratedKeys=" + useGeneratedKeys +
-                ", useColumnLabel=" + useColumnLabel +
-                ", cacheEnabled=" + cacheEnabled +
-                ", callSettersOnNulls=" + callSettersOnNulls +
-                ", useActualParamName=" + useActualParamName +
-                ", returnInstanceForEmptyRow=" + returnInstanceForEmptyRow +
-                ", shrinkWhitespacesInSql=" + shrinkWhitespacesInSql +
-                ", logPrefix='" + logPrefix + '\'' +
-                ", logImpl=" + logImpl +
-                ", vfsImpl=" + vfsImpl +
-                ", defaultSqlProviderType=" + defaultSqlProviderType +
-                ", localCacheScope=" + localCacheScope +
-                ", jdbcTypeForNull=" + jdbcTypeForNull +
-                ", lazyLoadTriggerMethods=" + lazyLoadTriggerMethods +
-                ", defaultStatementTimeout=" + defaultStatementTimeout +
-                ", defaultFetchSize=" + defaultFetchSize +
-                ", defaultResultSetType=" + defaultResultSetType +
-                ", defaultExecutorType=" + defaultExecutorType +
-                ", autoMappingBehavior=" + autoMappingBehavior +
-                ", autoMappingUnknownColumnBehavior=" + autoMappingUnknownColumnBehavior +
-                ", variables=" + variables +
-                ", reflectorFactory=" + reflectorFactory +
-                ", objectFactory=" + objectFactory +
-                ", objectWrapperFactory=" + objectWrapperFactory +
-                ", lazyLoadingEnabled=" + lazyLoadingEnabled +
-                ", proxyFactory=" + proxyFactory +
-                ", databaseId='" + databaseId + '\'' +
-                ", configurationFactory=" + configurationFactory +
-                ", mapperRegistry=" + mapperRegistry +
-                ", interceptorChain=" + interceptorChain +
-                ", typeHandlerRegistry=" + typeHandlerRegistry +
-                ", typeAliasRegistry=" + typeAliasRegistry +
-                ", languageRegistry=" + languageRegistry +
-                ", mappedStatements=" + mappedStatements +
-                ", caches=" + caches +
-                ", resultMaps=" + resultMaps +
-                ", parameterMaps=" + parameterMaps +
-                ", keyGenerators=" + keyGenerators +
-                ", loadedResources=" + loadedResources +
-                ", sqlFragments=" + sqlFragments +
-                ", incompleteStatements=" + incompleteStatements +
-                ", incompleteCacheRefs=" + incompleteCacheRefs +
-                ", incompleteResultMaps=" + incompleteResultMaps +
-                ", incompleteMethods=" + incompleteMethods +
-                ", cacheRefMap=" + cacheRefMap +
-                '}';
-    }
-
     protected final MapperRegistry mapperRegistry = new MapperRegistry(this);
     protected final InterceptorChain interceptorChain = new InterceptorChain();
     protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry(this);
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
     protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
 
+    /**
+     * 使用内部类 StrictMap，该类重写了put方法，如果存在相同的key 那么抛出异常 而不是进行覆盖
+     */
     protected final Map<String, MappedStatement> mappedStatements = new StrictMap<MappedStatement>("Mapped Statements collection")
             .conflictMessageProducer((savedValue, targetValue) ->
                     ". please check " + savedValue.getResource() + " and " + targetValue.getResource());
+
     protected final Map<String, Cache> caches = new StrictMap<>("Caches collection");
+
     protected final Map<String, ResultMap> resultMaps = new StrictMap<>("Result Maps collection");
+
     protected final Map<String, ParameterMap> parameterMaps = new StrictMap<>("Parameter Maps collection");
     protected final Map<String, KeyGenerator> keyGenerators = new StrictMap<>("Key Generators collection");
 
@@ -737,6 +687,9 @@ public class Configuration {
         } else {
             executor = new SimpleExecutor(this, transaction);
         }
+        /**
+         * cacheEnabled为configuration类的属性 默认为true，开启缓存执行器
+         */
         // 如果映射文件配置了二级缓存 默认是true，则对SimpleExecutor进行装饰，而装饰类是CacheExecutor，这就是创建DefaultSqlSession时传入的Executor参数
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
@@ -827,6 +780,11 @@ public class Configuration {
         return parameterMaps.containsKey(id);
     }
 
+    /**
+     * 解析mapper映射文件，然后添加到configuration类中
+     *
+     * @param ms
+     */
     public void addMappedStatement(MappedStatement ms) {
         mappedStatements.put(ms.getId(), ms);
     }

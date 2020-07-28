@@ -29,6 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 该类是封装了select/update/insert/delete标签属性的类
+ * 然后将该类也是configuration类的属性的一个成员
+ *
  * @author Clinton Begin
  */
 public final class MappedStatement {
