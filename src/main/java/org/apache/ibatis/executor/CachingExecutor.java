@@ -144,11 +144,10 @@ public class CachingExecutor implements Executor {
                 List<E> list = (List<E>) tcm.getObject(cache, key);
                 if (list == null) {
                     //如果二级缓存没命中，则调用装饰器模式的这个方法：这方法中是先查询一级缓存，如果还没命中，则会查询数据库
+                    // 此处的delegate为SimpleExecutor
                     list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
-                    /**
-                     * 把查询出的数据放到TransactionCache的entriesToAddOnCommit这个HashMap中，
-                     * 要注意：只是暂时存放到这里，只有当事务提交后，这里的数据才会真正的放到二级缓存中，后面会介绍这个 分析此方法
-                     */
+                    // 把查询出的数据放到TransactionCache的entriesToAddOnCommit这个HashMap中，
+                    // 要注意：只是暂时存放到这里，只有当事务提交后，这里的数据才会真正的放到二级缓存中，后面会介绍这个 分析此方法
                     tcm.putObject(cache, key, list); // issue #578 and #116
                 }
                 return list;
@@ -164,7 +163,7 @@ public class CachingExecutor implements Executor {
     }
 
     /**
-     * 事务进行提交 会将二级
+     * 事务进行提交 会将二级缓存进行缓存
      * @param required
      * @throws SQLException
      */

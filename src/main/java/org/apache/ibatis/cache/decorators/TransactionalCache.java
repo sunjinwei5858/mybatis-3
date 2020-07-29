@@ -91,6 +91,11 @@ public class TransactionalCache implements Cache {
         }
     }
 
+    /**
+     *
+     * @param key    Can be any object but usually it is a {@link CacheKey}
+     * @param object
+     */
     @Override
     public void putObject(Object key, Object object) {
         entriesToAddOnCommit.put(key, object);

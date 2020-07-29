@@ -61,7 +61,6 @@ public class LruCache implements Cache {
     public void setSize(final int size) {
         keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
             private static final long serialVersionUID = 4267176411845948333L;
-
             // 覆盖该方法，当每次往该map 中put 时数据时，如该方法返回 True，便移除该map中使用最少的Entry
             // 其参数  eldest 为当前最老的  Entry
             @Override
@@ -90,7 +89,7 @@ public class LruCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
-        // 便于 该 Map 统计 get该key的次数
+        // 便于 该 Map 统计 get该key的次数 刷新 key 在 keyMap 中的位置
         keyMap.get(key); // touch
         return delegate.getObject(key);
     }

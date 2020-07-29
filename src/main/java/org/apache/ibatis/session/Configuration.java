@@ -1090,4 +1090,60 @@ public class Configuration {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Configuration{" +
+                "environment=" + environment +
+                ", safeRowBoundsEnabled=" + safeRowBoundsEnabled +
+                ", safeResultHandlerEnabled=" + safeResultHandlerEnabled +
+                ", mapUnderscoreToCamelCase=" + mapUnderscoreToCamelCase +
+                ", aggressiveLazyLoading=" + aggressiveLazyLoading +
+                ", multipleResultSetsEnabled=" + multipleResultSetsEnabled +
+                ", useGeneratedKeys=" + useGeneratedKeys +
+                ", useColumnLabel=" + useColumnLabel +
+                ", cacheEnabled=" + cacheEnabled +
+                ", callSettersOnNulls=" + callSettersOnNulls +
+                ", useActualParamName=" + useActualParamName +
+                ", returnInstanceForEmptyRow=" + returnInstanceForEmptyRow +
+                ", shrinkWhitespacesInSql=" + shrinkWhitespacesInSql +
+                ", logPrefix='" + logPrefix + '\'' +
+                ", logImpl=" + logImpl +
+                ", vfsImpl=" + vfsImpl +
+                ", defaultSqlProviderType=" + defaultSqlProviderType +
+                ", localCacheScope=" + localCacheScope +
+                ", jdbcTypeForNull=" + jdbcTypeForNull +
+                ", lazyLoadTriggerMethods=" + lazyLoadTriggerMethods +
+                ", defaultStatementTimeout=" + defaultStatementTimeout +
+                ", defaultFetchSize=" + defaultFetchSize +
+                ", defaultResultSetType=" + defaultResultSetType +
+                ", defaultExecutorType=" + defaultExecutorType +
+                ", autoMappingBehavior=" + autoMappingBehavior +
+                ", autoMappingUnknownColumnBehavior=" + autoMappingUnknownColumnBehavior +
+                ", variables=" + variables +
+                ", reflectorFactory=" + reflectorFactory +
+                ", objectFactory=" + objectFactory +
+                ", objectWrapperFactory=" + objectWrapperFactory +
+                ", lazyLoadingEnabled=" + lazyLoadingEnabled +
+                ", proxyFactory=" + proxyFactory +
+                ", databaseId='" + databaseId + '\'' +
+                ", configurationFactory=" + configurationFactory +
+                ", mapperRegistry=" + mapperRegistry +
+                ", interceptorChain=" + interceptorChain +
+                ", typeHandlerRegistry=" + typeHandlerRegistry +
+                ", typeAliasRegistry=" + typeAliasRegistry +
+                ", languageRegistry=" + languageRegistry +
+                ", mappedStatements=" + mappedStatements +
+                ", caches=" + caches +
+                ", resultMaps=" + resultMaps +
+                ", parameterMaps=" + parameterMaps +
+                ", keyGenerators=" + keyGenerators +
+                ", loadedResources=" + loadedResources +
+                ", sqlFragments=" + sqlFragments +
+                ", incompleteStatements=" + incompleteStatements +
+                ", incompleteCacheRefs=" + incompleteCacheRefs +
+                ", incompleteResultMaps=" + incompleteResultMaps +
+                ", incompleteMethods=" + incompleteMethods +
+                ", cacheRefMap=" + cacheRefMap +
+                '}';
+    }
 }

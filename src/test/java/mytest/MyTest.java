@@ -63,19 +63,20 @@ public class MyTest {
          * 工厂模式生产SqlSession
          */
         SqlSession session = sqlSessionFactory.openSession();
+
+
         /**
          * 代理模式执行findUserList()方法
          */
         UserMapper userMapper = session.getMapper(UserMapper.class);
 
-        User user1 = userMapper.findUserById(1);
-
+        userMapper.findUserById(1);
 
         session.commit();
 
-        User user2 = userMapper.findUserById(1);
+        userMapper.findUserById(2);
+        userMapper.findUserById(1);
 
-        System.out.println(user2 == user1);
 
     }
 
@@ -240,15 +241,13 @@ public class MyTest {
     public void lruCasheTest() {
         LruCache lruCache = new LruCache(new PerpetualCache("default"));
         int size = lruCache.getSize();
-        System.out.println("========="+size);
-        lruCache.putObject("aaaa","aaa");
-        lruCache.putObject("bbb","bbb");
-        lruCache.putObject("ccc","ccc");
-
+        System.out.println("=========" + size);
+        lruCache.putObject("aaaa", "aaa");
+        lruCache.putObject("bbb", "bbb");
+        lruCache.putObject("ccc", "ccc");
 
 
     }
-
 
 
 }

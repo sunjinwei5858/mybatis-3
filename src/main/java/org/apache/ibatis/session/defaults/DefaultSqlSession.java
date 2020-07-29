@@ -251,6 +251,7 @@ public class DefaultSqlSession implements SqlSession {
         commit(false);
     }
 
+    // 事务提交 将事务缓存管理者管理的二级缓存进行真正缓存起来
     @Override
     public void commit(boolean force) {
         try {
