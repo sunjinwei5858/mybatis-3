@@ -41,6 +41,10 @@ public final class MappedStatement {
     private String id;
     private Integer fetchSize;
     private Integer timeout;
+    /**
+     * 告诉 MyBatis 分别使用Statement，PreparedStatement或者CallableStatement。默认：PREPARED
+     * select标签的属性成员之一
+     */
     private StatementType statementType;
     private ResultSetType resultSetType;
     private SqlSource sqlSource;
@@ -71,6 +75,7 @@ public final class MappedStatement {
             mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlSource = sqlSource;
+            // 此处说明默认为PREPARED
             mappedStatement.statementType = StatementType.PREPARED;
             mappedStatement.resultSetType = ResultSetType.DEFAULT;
             mappedStatement.parameterMap = new ParameterMap.Builder(configuration, "defaultParameterMap", null, new ArrayList<>()).build();

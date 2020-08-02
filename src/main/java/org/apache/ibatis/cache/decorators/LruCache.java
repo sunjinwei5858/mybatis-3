@@ -76,6 +76,8 @@ public class LruCache implements Cache {
     }
 
     /**
+     * put方法
+     *
      * 在put的时候 会进行清除缓存里面最少使用的 也就是进行LRU策略
      *
      * @param key   Can be any object but usually it is a {@link CacheKey}
@@ -87,15 +89,23 @@ public class LruCache implements Cache {
         cycleKeyList(key);
     }
 
+    /**
+     * get方法
+     * @param key
+     *          The key
+     * @return
+     */
     @Override
     public Object getObject(Object key) {
-        // 便于 该 Map 统计 get该key的次数 刷新 key 在 keyMap 中的位置
-        keyMap.get(key); // touch
+        // 刷新key在keyMap中的位置
+        keyMap.get(key);
+        // 从被装饰类中获取相应缓存项
         return delegate.getObject(key);
     }
 
     @Override
     public Object removeObject(Object key) {
+        // 从被装饰类中移除相应的缓存项
         return delegate.removeObject(key);
     }
 
@@ -112,8 +122,9 @@ public class LruCache implements Cache {
      * @param key
      */
     private void cycleKeyList(Object key) {
-        // // 存储当前 put 到cache中的 key 值
+        // 存储当前 put 到cache中的 key 值
         keyMap.put(key, key);
+        // 从被装饰类中移除相应的缓存项
         if (eldestKey != null) {
             delegate.removeObject(eldestKey);
             eldestKey = null;

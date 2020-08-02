@@ -53,7 +53,7 @@ public class PerpetualCache implements Cache {
 
     @Override
     public Object getObject(Object key) {
-        System.out.println("查询二级缓存。。。。。。");
+        System.out.println("PerpetualCache查询缓存, key为："+key);
         return cache.get(key);
     }
 

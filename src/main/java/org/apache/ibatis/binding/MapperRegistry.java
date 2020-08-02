@@ -39,12 +39,17 @@ public class MapperRegistry {
     }
 
     @SuppressWarnings("unchecked")
+    // MapperRegistry
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        // 从 knownMappers 中获取与 type 对应的 MapperProxyFactory
+        // MyBatis 在解析配置文件的<mappers>节点的过程中，
+        // 会调用 MapperRegistry 的 addMapper 方法将 Class 到 MapperProxyFactory 对象的映射关系存入到 knownMappers。
         final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
         if (mapperProxyFactory == null) {
             throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
         }
         try {
+            // 创建代理对象
             return mapperProxyFactory.newInstance(sqlSession);
         } catch (Exception e) {
             throw new BindingException("Error getting mapper instance. Cause: " + e, e);

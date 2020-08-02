@@ -100,6 +100,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      *
      * @return
      */
+    // XMLConfigBuilder
     public Configuration parse() {
         /**
          * 首先判断有没有解析过配置文件，只有没有解析过才允许解析
@@ -110,7 +111,6 @@ public class XMLConfigBuilder extends BaseBuilder {
         parsed = true;
         /**
          * mybatis配置文件解析的主流程
-         *
          * xpath表达式：/configuration
          * 调用了parser.evalNode(“/configuration”)返回根节点的org.apache.ibatis.parsing.XNode表示，
          * XNode里面主要把关键的节点属性和占位符变量结构化出来
@@ -500,6 +500,7 @@ public class XMLConfigBuilder extends BaseBuilder {
      * @param parent
      * @throws Exception
      */
+    // XMLConfigbuilder
     private void mapperElement(XNode parent) throws Exception {
         if (parent != null) {
             for (XNode child : parent.getChildren()) {
@@ -516,18 +517,15 @@ public class XMLConfigBuilder extends BaseBuilder {
                     if (resource != null && url == null && mapperClass == null) {
                         ErrorContext.instance().resource(resource);
                         InputStream inputStream = Resources.getResourceAsStream(resource);
-
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource, configuration.getSqlFragments());
                         mapperParser.parse();
                     } else if (resource == null && url != null && mapperClass == null) {
                         ErrorContext.instance().resource(url);
                         InputStream inputStream = Resources.getUrlAsStream(url);
-
                         XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, url, configuration.getSqlFragments());
                         mapperParser.parse();
                     } else if (resource == null && url == null && mapperClass != null) {
                         Class<?> mapperInterface = Resources.classForName(mapperClass);
-
                         configuration.addMapper(mapperInterface);
                     } else {
                         throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");

@@ -27,7 +27,7 @@ import java.util.Map;
  * @author Clinton Begin
  */
 public class TransactionalCacheManager {
-
+    // Cache 与 TransactionalCache 的映射关系表
     private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
     public void clear(Cache cache) {
@@ -71,6 +71,12 @@ public class TransactionalCacheManager {
         }
     }
 
+    /**
+     * 从映射表中获取 TransactionalCache
+     *
+     * @param cache
+     * @return
+     */
     private TransactionalCache getTransactionalCache(Cache cache) {
         return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
     }

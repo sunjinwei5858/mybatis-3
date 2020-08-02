@@ -91,6 +91,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
      * @throws Throwable
      */
     @Override
+    // MapperProxy
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         try {
             // 这里是进行判断是不是toString这种方法  针对于Object里的方法
@@ -104,17 +105,25 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         }
     }
 
+    /**
+     * MyBatis 从 3.4.2 版本开始， 对 JDK1.8 接口的默认方法提供了支持
+     *
+     * @param method
+     * @return
+     * @throws Throwable
+     */
     private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
         try {
             // A workaround for https://bugs.openjdk.java.net/browse/JDK-8161372
             // It should be removed once the fix is backported to Java 8 or
             // MyBatis drops Java 8 support. See gh-1929
             MapperMethodInvoker invoker = methodCache.get(method);
+            // 如果缓存中存在
             if (invoker != null) {
                 return invoker;
             }
-
             return methodCache.computeIfAbsent(method, m -> {
+                // 用于支持 JDK 1.8 中的新特性 - 默认方法
                 if (m.isDefault()) {
                     try {
                         if (privateLookupInMethod == null) {
@@ -127,6 +136,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
+                    // ！！！
                     return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
                 }
             });
@@ -170,6 +180,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable {
+            // 调用execute执行sql
             return mapperMethod.execute(sqlSession, args);
         }
     }

@@ -59,24 +59,14 @@ public class MyTest {
      */
     @Test
     public void sqlSessionTest() {
-        /**
-         * 工厂模式生产SqlSession
-         */
+
         SqlSession session = sqlSessionFactory.openSession();
 
-
-        /**
-         * 代理模式执行findUserList()方法
-         */
         UserMapper userMapper = session.getMapper(UserMapper.class);
 
-        userMapper.findUserById(1);
-
-        session.commit();
+        userMapper.findUserById(2);
 
         userMapper.findUserById(2);
-        userMapper.findUserById(1);
-
 
     }
 

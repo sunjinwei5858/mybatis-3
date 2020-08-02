@@ -27,7 +27,10 @@ import java.util.Set;
 /**
  * TransactionalCache实现了Cache接口，
  * 作用是保存某个sqlSession的某个事务中需要向某个二级缓存中添加的缓存数据，
- * 换句话说就是：某些缓存数据会先保存在这里，然后再提交到二级缓存中
+ * 换句话说就是：某些缓存数据会先保存在这里，然后再提交到二级缓存中。
+ * <p>
+ * TransactionalCacheManager 内部维护了 Cache 实例与 TransactionalCache 实例间的映 射关系，该类也仅负责维护两者的映射关系，
+ * 真正做事的还是 TransactionalCache。 TransactionalCache 是一种缓存装饰器，可以为 Cache 实例增加事务功能。脏读问题正是由该类进行处理的
  * <p>
  * The 2nd level cache transactional buffer.
  * <p>
@@ -48,7 +51,9 @@ public class TransactionalCache implements Cache {
     // 该字段为true时，则表示当前TransactionalCache不可查询，且提交事务时，会将底层的Cache清空
     private boolean clearOnCommit;
     // 暂时记录添加都TransactionalCahce中的数据，在事务提交时，会将其中的数据添加到二级缓存中
+    // 在事务被􏰀交前，所有从数据库中查询的结果将缓存在此集合中
     private final Map<Object, Object> entriesToAddOnCommit;
+    // 在事务被􏰀交前，当缓存未命中时，CacheKey 将会被存储在此集合中
     private final Set<Object> entriesMissedInCache;
 
     public TransactionalCache(Cache delegate) {
@@ -92,7 +97,6 @@ public class TransactionalCache implements Cache {
     }
 
     /**
-     *
      * @param key    Can be any object but usually it is a {@link CacheKey}
      * @param object
      */
@@ -123,6 +127,7 @@ public class TransactionalCache implements Cache {
         if (clearOnCommit) {
             delegate.clear();
         }
+        // 刷新未缓存的结果到 delegate 缓存中
         flushPendingEntries();
         reset();
     }

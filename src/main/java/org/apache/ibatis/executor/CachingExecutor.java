@@ -128,9 +128,14 @@ public class CachingExecutor implements Executor {
      * @throws SQLException
      */
     @Override
+    // CachingExecutor
     public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
             throws SQLException {
-        // 此处的cache就是当mybatis初始化加载mapper映射文件时，如果配置了<cache/>，就会有该cache对象;下面会对MappedStatement这个类进行分析
+        /**
+         * 此处的cache就是当mybatis初始化加载mapper映射文件时，如果配置了<cache/>，就会有该cache对象;
+         * 注意二级缓存是从MappedStatement 中获取的，而非由 CachingExecutor 创建。
+         * 由于MappedStatement存在于全局配置中，可以被多个 CachingExecutor 获取到，这样就会出现 线程安全问题
+         */
         Cache cache = ms.getCache();
         if (cache != null) {
             /**
@@ -153,7 +158,7 @@ public class CachingExecutor implements Executor {
                 return list;
             }
         }
-        //如果不使用缓存，则调用BaseExecutor的方法
+        //如果不使用二级缓存，则调用BaseExecutor的方法
         return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
     }
 

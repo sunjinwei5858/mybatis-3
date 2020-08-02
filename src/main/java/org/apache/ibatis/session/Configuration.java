@@ -130,7 +130,7 @@ public class Configuration {
     // 指定 MyBatis 应如何自动映射列到字段或属性。 NONE 表示取消自动映射；PARTIAL 只会自动映射没有定义嵌套结果集映射的结果集。 FULL 会自动映射任意复杂的结果集（无论是否嵌套）。
     protected AutoMappingBehavior autoMappingBehavior = AutoMappingBehavior.PARTIAL;
     protected AutoMappingUnknownColumnBehavior autoMappingUnknownColumnBehavior = AutoMappingUnknownColumnBehavior.NONE;
-
+    // 映射文件mapper解析 <mapper 标签
     protected Properties variables = new Properties();
     protected ReflectorFactory reflectorFactory = new DefaultReflectorFactory();
     protected ObjectFactory objectFactory = new DefaultObjectFactory();
@@ -344,7 +344,7 @@ public class Configuration {
     public void setMapUnderscoreToCamelCase(boolean mapUnderscoreToCamelCase) {
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
     }
-
+    // Configuration
     public void addLoadedResource(String resource) {
         loadedResources.add(resource);
     }
@@ -676,6 +676,7 @@ public class Configuration {
      * @param executorType
      * @return
      */
+    // Configuration
     public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
         executorType = executorType == null ? defaultExecutorType : executorType;
         executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
@@ -689,8 +690,8 @@ public class Configuration {
         }
         /**
          * cacheEnabled为configuration类的属性 默认为true，开启缓存执行器
+         * 则对SimpleExecutor进行装饰，而装饰类是CacheExecutor
          */
-        // 如果映射文件配置了二级缓存 默认是true，则对SimpleExecutor进行装饰，而装饰类是CacheExecutor，这就是创建DefaultSqlSession时传入的Executor参数
         if (cacheEnabled) {
             executor = new CachingExecutor(executor);
         }
@@ -854,14 +855,14 @@ public class Configuration {
         mapperRegistry.addMappers(packageName, superType);
     }
 
+    // Configuration
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
     }
-
     public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
     }
-
+    // Configuration
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return mapperRegistry.getMapper(type, sqlSession);
     }

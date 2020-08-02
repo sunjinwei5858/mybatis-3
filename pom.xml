@@ -144,6 +144,8 @@
     <jacoco.version>0.8.5</jacoco.version>
   </properties>
 
+
+
   <dependencies>
     <dependency>
       <groupId>ognl</groupId>
@@ -375,6 +377,7 @@
           <include>NOTICE</include>
         </includes>
       </resource>
+
       <resource>
         <directory>${project.build.sourceDirectory}</directory>
         <excludes>

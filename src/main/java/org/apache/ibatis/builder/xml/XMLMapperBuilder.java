@@ -80,6 +80,7 @@ public class XMLMapperBuilder extends BaseBuilder {
      * 2. 通过命名空间绑定 Mapper 接口
      * 3. 处理未完成解析的节点
      */
+    // XMLMapperBuilder
     public void parse() {
         // 检测映射文件是否已经被解析过
         if (!configuration.isResourceLoaded(resource)) {
@@ -90,7 +91,6 @@ public class XMLMapperBuilder extends BaseBuilder {
             // 通过命名空间绑定 Mapper 接口
             bindMapperForNamespace();
         }
-
         // 处理未完成解析的节点
         parsePendingResultMaps();
         parsePendingCacheRefs();

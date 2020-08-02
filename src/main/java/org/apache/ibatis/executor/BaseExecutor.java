@@ -67,7 +67,7 @@ public abstract class BaseExecutor implements Executor {
         this.transaction = transaction;
         this.deferredLoads = new ConcurrentLinkedQueue<>();
         /**
-         *
+         * 一级缓存
          */
         this.localCache = new PerpetualCache("LocalCache");
         this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
@@ -121,6 +121,7 @@ public abstract class BaseExecutor implements Executor {
      * @throws SQLException
      */
     @Override
+    // BaseExecutor
     public int update(MappedStatement ms, Object parameter) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing an update").object(ms.getId());
         if (closed) {
@@ -154,6 +155,7 @@ public abstract class BaseExecutor implements Executor {
      * @throws SQLException
      */
     @Override
+    // BaseExecutor
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
         BoundSql boundSql = ms.getBoundSql(parameter);
         CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
@@ -172,11 +174,14 @@ public abstract class BaseExecutor implements Executor {
      * @param key
      * @param boundSql
      * @param <E>
-     * @return
+     * @return System.out.println("BaseExecutor开始查询一级缓存.....");
+     * System.out.println("BaseExecutor一级缓存 存在");
+     * System.out.println("BaseExecutor一级缓存 不存在 那么查询数据库");
      * @throws SQLException
      */
     @SuppressWarnings("unchecked")
     @Override
+    // BaseExecutor
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         ErrorContext.instance().resource(ms.getResource()).activity("executing a query").object(ms.getId());
         if (closed) {
@@ -190,7 +195,6 @@ public abstract class BaseExecutor implements Executor {
             queryStack++;
             // 从一级缓存中查询 从本地缓存在中获取该 key 所对应 的结果集
             list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
-            //
             if (list != null) {
                 handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
             } else {
@@ -393,6 +397,7 @@ public abstract class BaseExecutor implements Executor {
             localCache.removeObject(key);
         }
         localCache.putObject(key, list);
+        // 存储过程相关逻辑，忽略
         if (ms.getStatementType() == StatementType.CALLABLE) {
             localOutputParameterCache.putObject(key, parameter);
         }
