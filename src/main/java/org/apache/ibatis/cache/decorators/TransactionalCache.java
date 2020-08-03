@@ -30,7 +30,10 @@ import java.util.Set;
  * 换句话说就是：某些缓存数据会先保存在这里，然后再提交到二级缓存中。
  * <p>
  * TransactionalCacheManager 内部维护了 Cache 实例与 TransactionalCache 实例间的映 射关系，该类也仅负责维护两者的映射关系，
- * 真正做事的还是 TransactionalCache。 TransactionalCache 是一种缓存装饰器，可以为 Cache 实例增加事务功能。脏读问题正是由该类进行处理的
+ * 真正做事的还是 TransactionalCache。 TransactionalCache 是一种缓存装饰器，可以为 Cache 实例增加事务功能。脏读问题正是由该类进行处理的。
+ * <p>
+ * MyBatis 引入事务 缓存解决了脏读问题，事务间只能读取到其他事务提交后的内容，
+ * 这相当于事务隔离级别中 的“读已提交(Read Committed)”。但需要注意的时，MyBatis 缓存事务机制只能解决脏读 问题，并不能解决“不可重复读”问题。
  * <p>
  * The 2nd level cache transactional buffer.
  * <p>
@@ -97,11 +100,14 @@ public class TransactionalCache implements Cache {
     }
 
     /**
+     * 将键值对存入到 entriesToAddOnCommit 中，而非 delegate 缓存中
+     *
      * @param key    Can be any object but usually it is a {@link CacheKey}
      * @param object
      */
     @Override
     public void putObject(Object key, Object object) {
+        // 将键值对存入到 entriesToAddOnCommit 中，而非 delegate 缓存中
         entriesToAddOnCommit.put(key, object);
     }
 
@@ -120,7 +126,8 @@ public class TransactionalCache implements Cache {
     }
 
     /**
-     * 由于在上一步更新操作中，clearOnCommit设置为了true，所以进入此方法：清除二级缓存中的数据
+     * 提交事务 将缓存在TransactionalCache的entriesToAddOnCommit的数据缓存到二级缓存delegate中去
+     * 更新操作中，会将clearOnCommit设置为了true，进入此方法：清除二级缓存中的数据
      */
     public void commit() {
         // 由于在上一步更新操作中，clearOnCommit设置为了true，所以进入此方法：清除二级缓存中的数据
@@ -129,6 +136,7 @@ public class TransactionalCache implements Cache {
         }
         // 刷新未缓存的结果到 delegate 缓存中
         flushPendingEntries();
+        // 重置 entriesToAddOnCommit 和 entriesMissedInCache
         reset();
     }
 
@@ -145,10 +153,12 @@ public class TransactionalCache implements Cache {
 
     private void flushPendingEntries() {
         for (Map.Entry<Object, Object> entry : entriesToAddOnCommit.entrySet()) {
+            // 将 entriesToAddOnCommit 中的内容转存到 delegate 中
             delegate.putObject(entry.getKey(), entry.getValue());
         }
         for (Object entry : entriesMissedInCache) {
             if (!entriesToAddOnCommit.containsKey(entry)) {
+                // 存入空值
                 delegate.putObject(entry, null);
             }
         }

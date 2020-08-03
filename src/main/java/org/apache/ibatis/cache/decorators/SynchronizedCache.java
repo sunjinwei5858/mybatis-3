@@ -58,6 +58,12 @@ public class SynchronizedCache implements Cache {
         delegate.putObject(key, object);
     }
 
+    /**
+     * 多线程环境下 保证线程安全的拿到缓存
+     *
+     * @param key The key
+     * @return
+     */
     @Override
     public synchronized Object getObject(Object key) {
         return delegate.getObject(key);

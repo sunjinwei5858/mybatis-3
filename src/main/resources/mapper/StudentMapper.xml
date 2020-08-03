@@ -7,7 +7,7 @@
     </update>
 
     <!-- 开启二级缓存 -->
-<!--        <cache></cache>-->
+        <cache></cache>
 
     <!--userCashe属性为true 表示开启二级缓存-->
     <select id="findUserList" resultType="org.apache.ibatis.domain.User">
