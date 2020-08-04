@@ -136,7 +136,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    // ！！！
+                    // ！！！使用静态内部类 静态内部类 用静态内部类只有在第一次使用才会被加载。
                     return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
                 }
             });
