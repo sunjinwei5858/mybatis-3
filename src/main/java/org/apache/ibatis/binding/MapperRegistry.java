@@ -38,6 +38,13 @@ public class MapperRegistry {
         this.config = config;
     }
 
+    /**
+     * 创建MapperProxy对象入口3
+     * @param type
+     * @param sqlSession
+     * @param <T>
+     * @return
+     */
     @SuppressWarnings("unchecked")
     // MapperRegistry
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {

@@ -312,6 +312,11 @@ public class MapperMethod {
             this.paramNameResolver = new ParamNameResolver(configuration, method);
         }
 
+        /**
+         *
+         * @param args
+         * @return
+         */
         public Object convertArgsToSqlCommandParam(Object[] args) {
             return paramNameResolver.getNamedParams(args);
         }

@@ -33,7 +33,8 @@ import java.util.Map;
  * 代理模式：
  * 为什么要使用MapperProxy？
  * <p>
- * 主要是想在这里进行统一处理，所有的关于Mapper接口的操作统一交由MapperProxy来处理，MapperProxy最终也是通过sqlSession来处理
+ * 主要是想在这里进行统一处理，所有的关于Mapper接口的操作统一交由MapperProxy来处理，MapperProxy最终也是通过sqlSession来处理。
+ * 实现了InvocationHandler接口
  *
  * @author Clinton Begin
  * @author Eduardo Macarron
@@ -98,7 +99,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);
             } else {
-                return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
+                // 从缓存中获取 MapperMethod 对象，若缓存未命中，则创建 MapperMethod 对象
+                MapperMethodInvoker mapperMethodInvoker = cachedInvoker(method);
+                return mapperMethodInvoker.invoke(proxy, method, args, sqlSession);
             }
         } catch (Throwable t) {
             throw ExceptionUtil.unwrapThrowable(t);

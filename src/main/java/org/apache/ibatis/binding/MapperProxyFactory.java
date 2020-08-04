@@ -45,13 +45,21 @@ public class MapperProxyFactory<T> {
 
   @SuppressWarnings("unchecked")
   protected T newInstance(MapperProxy<T> mapperProxy) {
+    // 通过 JDK 动态代理创建代理对象
     return (T) Proxy.newProxyInstance(
             mapperInterface.getClassLoader(), new Class[] { mapperInterface }, mapperProxy
     );
   }
 
+  /**
+   * 创建MapperProxy对象入口4
+   * 获取到 MapperProxyFactory 对象后，即可调用工厂方法为 Mapper 接口生成代理对象
+   * @param sqlSession
+   * @return
+   */
   // MapperProxyFactory
   public T newInstance(SqlSession sqlSession) {
+    // 创建 MapperProxy 对象，MapperProxy 实现了 InvocationHandler 接口
     final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
     return newInstance(mapperProxy);
   }

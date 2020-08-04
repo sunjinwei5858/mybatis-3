@@ -321,6 +321,12 @@ public class DefaultSqlSession implements SqlSession {
         return configuration;
     }
 
+    /**
+     * 创建MapperProxy对象入口1
+     * @param type Mapper interface class
+     * @param <T>
+     * @return
+     */
     @Override
     // DefaultSqlSession
     public <T> T getMapper(Class<T> type) {

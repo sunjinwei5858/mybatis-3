@@ -344,6 +344,7 @@ public class Configuration {
     public void setMapUnderscoreToCamelCase(boolean mapUnderscoreToCamelCase) {
         this.mapUnderscoreToCamelCase = mapUnderscoreToCamelCase;
     }
+
     // Configuration
     public void addLoadedResource(String resource) {
         loadedResources.add(resource);
@@ -859,9 +860,19 @@ public class Configuration {
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);
     }
+
     public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
     }
+
+    /**
+     * 创建MapperProxy对象入口2
+     *
+     * @param type
+     * @param sqlSession
+     * @param <T>
+     * @return
+     */
     // Configuration
     public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
         return mapperRegistry.getMapper(type, sqlSession);
