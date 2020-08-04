@@ -21,7 +21,7 @@ import java.sql.Connection;
  * 建造者模式在mybatits的应用
  * 1. 产品（SqlSessionFactory）
  *
- * 工厂模式在 MyBatis 中的典型代表是 SqlSessionFactory。
+ * 抽象工厂模式在 MyBatis 中的典型代表是 SqlSessionFactory
  * SqlSession 是 MyBatis 中的重要 Java 接口，可以通过该接口来执行 SQL 命令、获取映射器示例和管理事务，
  * 而 SqlSessionFactory 正是用来产生 SqlSession 对象的.
  * 它的子类 DefaultSqlSessionFactory 有一个 openSession(ExecutorType execType) 的方法，其中使用了工厂模式

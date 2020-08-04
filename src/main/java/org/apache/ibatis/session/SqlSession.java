@@ -15,13 +15,13 @@
  */
 package org.apache.ibatis.session;
 
+import org.apache.ibatis.cursor.Cursor;
+import org.apache.ibatis.executor.BatchResult;
+
 import java.io.Closeable;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.ibatis.cursor.Cursor;
-import org.apache.ibatis.executor.BatchResult;
 
 /**
  * The primary Java interface for working with MyBatis.
@@ -34,7 +34,7 @@ public interface SqlSession extends Closeable {
   /**
    * Retrieve a single row mapped from the statement key.
    * @param <T> the returned object type
-   * @param statement
+   * @param statement，
    *          the statement
    * @return Mapped object
    */
