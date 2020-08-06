@@ -210,6 +210,7 @@ public abstract class BaseExecutor implements Executor {
             }
             // issue #601
             deferredLoads.clear();
+            // 如果一级缓存作用域LocalCacheScope设置的是STATEMENT 那么清空一级缓存 一级缓存失效
             if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
                 // issue #482
                 clearLocalCache();

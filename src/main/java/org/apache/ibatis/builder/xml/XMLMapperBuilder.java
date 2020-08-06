@@ -449,6 +449,7 @@ public class XMLMapperBuilder extends BaseBuilder {
                 // to prevent loading again this resource from the mapper interface
                 // look at MapperAnnotationBuilder#loadXmlResource
                 configuration.addLoadedResource("namespace:" + namespace);
+                // 这里很重要 在这里将接口注册到代理MapperRegistry中
                 configuration.addMapper(boundType);
             }
         }

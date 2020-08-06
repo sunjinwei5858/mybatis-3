@@ -43,12 +43,13 @@ public class MyTest {
     @BeforeEach
     public void init() throws IOException {
         inputStream = Resources.getResourceAsStream(resource);
+        sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
         /**
+         * sqlSessionFactory
          * 建造者模式
          * SqlSessionFactoryBuilder 类相当于一个建造工厂，先读取文件或者配置信息、再解析配置、然后通过反射生成对象，
          * 最后再把结果存入缓存，这样就一步步构建造出一个 SqlSessionFactory 对象。
          */
-        sqlSessionFactoryBuilder = new SqlSessionFactoryBuilder();
         sqlSessionFactory = sqlSessionFactoryBuilder.build(inputStream);
     }
 
@@ -60,8 +61,15 @@ public class MyTest {
     @Test
     public void sqlSessionTest() {
 
+        /**
+         * SqlSession
+         * 获取Session会话
+         */
         SqlSession session = sqlSessionFactory.openSession();
 
+        /**
+         * 获取UserMapper代理
+         */
         UserMapper userMapper = session.getMapper(UserMapper.class);
 
         userMapper.findUserById(2);
@@ -74,9 +82,6 @@ public class MyTest {
         UserMapper userMapper02 = session02.getMapper(UserMapper.class);
 
         userMapper02.findUserById(2);
-
-
-
 
     }
 

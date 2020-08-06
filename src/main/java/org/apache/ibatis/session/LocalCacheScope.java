@@ -16,6 +16,10 @@
 package org.apache.ibatis.session;
 
 /**
+ * LocalCache，也被称为一级缓存，有如下特点:
+ *     它的生命周期与SqlSession一致。
+ *     底层用HashMap实现，没有缓存内容更新和过期。
+ *     有个多个SqlSession时，且有数据库写，会出现脏读的情况，一级缓存慎用，或者将Scope设置为Statement。
  * @author Eduardo Macarron
  */
 public enum LocalCacheScope {

@@ -307,7 +307,8 @@ public class XMLConfigBuilder extends BaseBuilder {
      * 3 将包含属性信息的 Properties 对象设置到 XPathParser 和 Configuration 中。
      * 注意：
      * 1 顺序：xml配置优先， 外部指定properties配置其次
-     * 也就是：先解析<properties>节点的子节点内容，然后再 从文件系统或者网络读取属性配置，并将所有的属性及属性值都放入到 defaults 属性对象中
+     * 也就是：
+     * 先解析<properties>节点的子节点内容，然后再 从文件系统或者网络读取属性配置，并将所有的属性及属性值都放入到 defaults 属性对象中
      * 2 这会导致同名属性覆盖的问题，也就是从文件系统，或者网络上读取到的属性和属性值会覆 盖掉<properties>子节点中同名的属性和及值
      *
      * @param context
@@ -325,7 +326,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             if (resource != null && url != null) {
                 throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
             }
-            // 2从文件系统或者
+            // 2从文件系统或者url
             if (resource != null) {
                 // 从文件系统中加载并解析属性文件
                 defaults.putAll(Resources.getResourceAsProperties(resource));
@@ -364,7 +365,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         configuration.setUseColumnLabel(booleanValueOf(props.getProperty("useColumnLabel"), true));
         // 返回自增主键 默认为false
         configuration.setUseGeneratedKeys(booleanValueOf(props.getProperty("useGeneratedKeys"), false));
-        // 默认的执行期 simple
+        // 默认的执行器 simple
         configuration.setDefaultExecutorType(ExecutorType.valueOf(props.getProperty("defaultExecutorType", "SIMPLE")));
         configuration.setDefaultStatementTimeout(integerValueOf(props.getProperty("defaultStatementTimeout"), null));
         configuration.setDefaultFetchSize(integerValueOf(props.getProperty("defaultFetchSize"), null));
