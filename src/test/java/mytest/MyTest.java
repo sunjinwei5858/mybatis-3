@@ -74,10 +74,6 @@ public class MyTest {
 
         userMapper.findUserById(2);
 
-        session.commit();
-
-        System.out.println("=========二级缓存=====");
-
         SqlSession session02 = sqlSessionFactory.openSession();
         UserMapper userMapper02 = session02.getMapper(UserMapper.class);
 

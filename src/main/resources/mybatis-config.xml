@@ -22,9 +22,12 @@
 
 <configuration>
 
-    <properties resource="jdbc.properties"/>
+    <properties resource="jdbc.properties">
+
+    </properties>
 
     <settings>
+
         <!--日志实现-->
         <setting name="logImpl" value="STDOUT_LOGGING" />
     </settings>
@@ -47,6 +50,7 @@
 
     <mappers>
         <mapper resource="mapper/StudentMapper.xml"/>
+
     </mappers>
 
 </configuration>
