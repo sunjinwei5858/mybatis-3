@@ -79,6 +79,10 @@ public class MyTest {
 
         userMapper02.findUserById(2);
 
+        System.out.println("==================");
+
+        userMapper.findUserById(2);
+
     }
 
     /**
