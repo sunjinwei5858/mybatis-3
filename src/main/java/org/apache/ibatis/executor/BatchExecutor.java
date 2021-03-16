@@ -51,6 +51,16 @@ public class BatchExecutor extends BaseExecutor {
         super(configuration, transaction);
     }
 
+    /**
+     * 如果ExecutorType是batch 批量处理会共用预处理语句
+     * currentSql： UPDATE user set name = ? where id = ?
+     * currentStatement：org.apache.ibatis.mapping.MappedStatement@5f16132a
+     *
+     * @param ms
+     * @param parameterObject
+     * @return
+     * @throws SQLException
+     */
     @Override
     public int doUpdate(MappedStatement ms, Object parameterObject) throws SQLException {
         final Configuration configuration = ms.getConfiguration();
@@ -58,7 +68,10 @@ public class BatchExecutor extends BaseExecutor {
         final BoundSql boundSql = handler.getBoundSql();
         final String sql = boundSql.getSql();
         final Statement stmt;
+
         if (sql.equals(currentSql) && ms.equals(currentStatement)) {
+            System.out.println("====currentSql===equals:    " + currentSql);
+            System.out.println("====currentStatement===equals:    " + currentStatement.getId());
             int last = statementList.size() - 1;
             stmt = statementList.get(last);
             applyTransactionTimeout(stmt);
@@ -66,6 +79,7 @@ public class BatchExecutor extends BaseExecutor {
             BatchResult batchResult = batchResultList.get(last);
             batchResult.addParameterObject(parameterObject);
         } else {
+            System.out.println("=====new =====");
             Connection connection = getConnection(ms.getStatementLog());
             stmt = handler.prepare(connection, transaction.getTimeout());
             handler.parameterize(stmt);    // fix Issues 322

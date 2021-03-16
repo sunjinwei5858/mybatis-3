@@ -18,8 +18,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * 1。各种执行器实现分析
@@ -151,11 +150,23 @@ public class MyTest {
         JdbcTransaction jdbcTransaction = new JdbcTransaction(connection);
 
         BatchExecutor executor = new BatchExecutor(configuration, jdbcTransaction);
-        Map paramsMap = new HashMap<String, String>();
-        paramsMap.put("aa", 1);
-        paramsMap.put("bb", "rrrr");
-        // doUpdate 方法相当于设置参数
-        executor.doUpdate(mappedStatement, paramsMap);
+
+        User user01 = new User();
+        user01.setId(1);
+        user01.setName("张三");
+
+        User user02 = new User();
+        user02.setId(2);
+        user02.setName("李四");
+
+        ArrayList<User> users = new ArrayList<>();
+        users.add(user01);
+        users.add(user02);
+
+        for (User user : users) {
+            executor.doUpdate(mappedStatement, user);
+        }
+
         // 只有设置doFlushStatements为false才会真正去提交
         // 这个就是批处理刷新功能 发射功能
         executor.doFlushStatements(false);

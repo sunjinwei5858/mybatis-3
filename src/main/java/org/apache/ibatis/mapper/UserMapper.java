@@ -9,7 +9,7 @@ public interface UserMapper {
 
     List<User> findUserList();
 
-    int updateName(String name,int id);
+    int updateName(User user);
 
     User findUserById(Integer userId);
 
